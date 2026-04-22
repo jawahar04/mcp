@@ -110,7 +110,8 @@ if __name__ == "__main__":
 python mcp_client.py
 ```
 
-![Running client](./images/mcp7-new.png?raw=true "Running client")
+![Running agent](./images/mcp153.png?raw=true "Running agent")
+
 </br></br>
 
 10. Finally, let's build out a simple agent implementation that uses tools from this server in conjunction with a local LLM to respond to a prompt. We'll assemble the agent code again using the *diff and merge* approach. Run the command below and you can scroll down through the differences and merge them in to complete the code. When done, just click the "X" in the tab at the top to close this view.
@@ -127,8 +128,6 @@ code -d ../extra/agent_mcp.txt agent_mcp.py
 ```
 python agent_mcp.py
 ```
-
-![Running agent](./images/mcp153.png?raw=true "Running agent")
 
 ![agent answer](./images/mcp154.png?raw=true "agent answer")
 
