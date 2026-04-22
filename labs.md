@@ -1,7 +1,7 @@
 # Understanding MCP (Model Context Protocol) - A hands-on guide
 ## Understanding how AI agents can connect to the world
 ## Session labs 
-## Revision 5.5 - 04/22/26
+## Revision 5.6 - 04/22/26
 
 **Versions of dialogs, buttons, etc. shown in screenshots may differ from current version used in dev environments**
 
@@ -291,7 +291,7 @@ python secure_server.py
 <br><br>
 
 
-6. Open another new terminal (you can use the "+" again) and run the curl below to demonstrate that requests with no tokens fail. (When you run this you will see a "401 Unauthorized" response. 
+6. Open another new terminal (you can use the "+" again) and run the curl below to demonstrate that requests with no tokens fail. When you run this you will see a "401 Unauthorized" response. 
 
 ```
 cd lab3 
@@ -305,7 +305,7 @@ curl -i -X POST http://127.0.0.1:8000/mcp \
 <br><br>
 
 
-7. Back in the terminal where you ran that last curl, you can run the secure client. You should see output showing that it ran the "add" tool and the results. Behind the scenes it will have A) POSTed to /token B) Connected to /mcp  with Authorization: Bearer ...  C) Called the secure tool.
+7. In the terminal where you ran that last curl, you can run the secure client. You should see output showing that it ran the "add" tool and the results. Behind the scenes it will have A) POSTed to /token B) Connected to /mcp  with Authorization: Bearer ...  C) Called the secure tool.
 
 ```
 python secure_client.py
@@ -337,10 +337,10 @@ curl -i -X POST http://127.0.0.1:8000/mcp \
      -d '{"jsonrpc":"2.0","id":2,"method":"add","params":{"a":1,"b":1}}'
 ```
 </br></br>
-Then look back at the terminal with the secure server running and you should see an error message.
+You should see an error message noting that the access is unauthorized and the token is invalid.
 </br></br>
 
-![Invalid token](./images/mcp63.png?raw=true "Invalid token") 
+![Invalid token](./images/mcp158.png?raw=true "Invalid token") 
 
 </br></br>
 
