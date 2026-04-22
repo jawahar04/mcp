@@ -1,7 +1,7 @@
 # Understanding MCP (Model Context Protocol) - A hands-on guide
 ## Understanding how AI agents can connect to the world
 ## Session labs 
-## Revision 5.4 - 04/21/26
+## Revision 5.5 - 04/22/26
 
 **Versions of dialogs, buttons, etc. shown in screenshots may differ from current version used in dev environments**
 
@@ -285,10 +285,13 @@ source ~/.bashrc
 cd ../lab3 (if needed)
 python secure_server.py
 ```
+
+![start secure server](./images/mcp156.png?raw=true "start secure server")
+
 <br><br>
 
 
-6. Open another new terminal (you can use the "+" again) and run the curl below to demonstrate that requests with no tokens fail. (When you run this you will see a "500 Internal Server Error" response. But if you switch back to the terminal where the server is running, you'll see that it's really a "401" error. It shows as a 500 error because the 401 is "swallowed" before it gets back to the client.
+6. Open another new terminal (you can use the "+" again) and run the curl below to demonstrate that requests with no tokens fail. (When you run this you will see a "401 Unauthorized" response. 
 
 ```
 cd lab3 
@@ -298,7 +301,7 @@ curl -i -X POST http://127.0.0.1:8000/mcp \
      -d '{"jsonrpc":"2.0","id":"bad","method":"list_tools","params":[]}'
 ```
 
-![500 error and switching terminals](./images/mcp56.png?raw=true "500 error and switching terminals") 
+![401 error](./images/mcp157.png?raw=true "401 error") 
 <br><br>
 
 
