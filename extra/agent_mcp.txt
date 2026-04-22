@@ -52,10 +52,10 @@ async def main():
     # MultiServerMCPClient lets you define one or more MCP servers by name.
     # Here we register a single server called "CalcMCP" which exposes add/mul/div/etc.
 
-    client = MultiServerMCPClient({
+   client = MultiServerMCPClient({
         "CalcMCP": {
-            "url": "http://127.0.0.1:8931/sse",
-            "transport": "sse",
+            "url": "http://127.0.0.1:8931/mcp",
+            "transport": "streamable_http",
         }
     })
 
