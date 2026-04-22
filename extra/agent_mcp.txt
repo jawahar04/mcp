@@ -52,9 +52,9 @@ async def main():
     # MultiServerMCPClient lets you define one or more MCP servers by name.
     # Here we register a single server called "CalcMCP" which exposes add/mul/div/etc.
 
-   client = MultiServerMCPClient({
+    client = MultiServerMCPClient({
         "CalcMCP": {
-            "url": "http://127.0.0.1:8931/mcp",
+            "url": "http://127.0.0.1:8931/mcp/",
             "transport": "streamable_http",
         }
     })
@@ -73,35 +73,19 @@ async def main():
     # 2) Create an LLM that knows how to "call tools"
     # =========================================================================
     # ChatOllama is your local LLM runner.
-    # .bind_tools(tools) passes the tool SCHEMAS (names, arg types, descriptions)
-    # that we just discovered from the MCP server into the model call. Nothing
-    # about which tools exist is hardcoded here — the model only ever sees tool
-    # metadata that came from MCP at run-time.
+    # .bind_tools(tools) tells the model which tool "schemas" it is allowed to call.
 
     llm = ChatOllama(model="llama3.2").bind_tools(tools)
 
-    # -------------------------------------------------------------------------
-    # Build the system prompt DYNAMICALLY from MCP-advertised tool metadata.
-    #
-    # The important MCP idea: the client should not assume what tools exist or
-    # what they're called. Instead, it asks the server (via list_tools /
-    # get_tools) and uses that live info. Below we turn the discovered tools
-    # into a plain-text catalog and splice it into the system prompt so the
-    # LLM's instructions always match what the server actually offers.
-    # -------------------------------------------------------------------------
-    tool_catalog = "\n".join(
-        f"- {t.name}: {(getattr(t, 'description', '') or '').strip()}"
-        for t in tools
-    )
+    # This is the "system message" that sets the rules of behavior.
+    # We emphasize: use tools for math, no nesting, and sequential steps.
 
     system_prompt = (
-        "You are a helpful assistant that solves problems by calling tools.\n"
-        "You must use the tools listed below for any work they can perform.\n"
+        "You are a math assistant.\n"
+        "You must use tools for all calculations.\n"
         "Never nest tool calls.\n"
         "If multiple steps are needed, call tools in sequence.\n"
-        "When you use a tool result, use the numeric value from the tool result.\n\n"
-        "Available tools (discovered from the MCP server at run-time):\n"
-        f"{tool_catalog}\n"
+        "When you use a tool result, use the numeric value from the tool result.\n"
     )
 
     # User question. This requires at least two steps: mul(12,8) then div(96,3).
