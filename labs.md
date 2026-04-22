@@ -500,7 +500,7 @@ python gateway.py
 ```
 <br><br>
 
-4. Now let's create the IDE configuration that tells VS Code how to connect to our MCP server. Run the commands below. We'll start with just our local gateway — we'll add GitHub in a later step. (Switch to a new terminal if needed.)
+4. Now let's create the IDE configuration that tells VS Code how to connect to our MCP server. Run the commands below. We'll start with just our local gateway — we'll add GitHub in a later step. (Switch to another terminal if needed.)
 
 ```
 cd /workspaces/mcp
