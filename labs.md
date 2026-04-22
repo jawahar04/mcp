@@ -462,7 +462,7 @@ python gateway.py
 
 <br><br>
 
-12. Restart the Explorer and connect to the gateway server on `http://localhost:8000/mcp`. Click on *Tools* and you'll see all tools from both servers, namespaced: `notes_save_note`, `notes_list_notes`, `math_add`, `math_multiply`. Try calling `math_multiply` with `a`: 6 and `b`: 7 to confirm both servers are live. When done, stop the gateway with CTRL+C. **Leave it stopped for now — we'll restart it in Lab 5.**
+12. Restart the Explorer and connect to the gateway server on `http://localhost:8000/mcp`. Click on *Tools* and you'll see all tools from both servers, namespaced: `notes_save_note`, `notes_list_notes`, `math_add`, `math_multiply`. Try calling `math_multiply` with `a`: 6 and `b`: 7 to confirm both servers are live. 
 
 ![all tools](./images/mcp138.png?raw=true "all tools")
 
