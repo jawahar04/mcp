@@ -6,11 +6,25 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, ToolMessage
 
 
+# -----------------------------------------------------------------------------
+# Helper: extract the final numeric value from a sentence-like tool response.
+#
+# Your CalcMCP tools may return text like:
+#   "The product of 12 and 8 is 96"
+# We want to pull out "96" so we can feed clean numbers back into later tool calls.
+# -----------------------------------------------------------------------------
 def last_number(text: str) -> str:
     nums = re.findall(r"-?\d+(?:\.\d+)?", text)
     return nums[-1] if nums else text
 
 
+# -----------------------------------------------------------------------------
+# Helper: normalize the MCP tool response to plain text.
+#
+# Many MCP servers return "content blocks" like:
+#   [{'type': 'text', 'text': '...'}]
+# This function grabs the text content (or falls back to str(...)).
+# -----------------------------------------------------------------------------
 def tool_text(result) -> str:
     if isinstance(result, list) and result and isinstance(result[0], dict) and "text" in result[0]:
         return result[0]["text"]
@@ -35,8 +49,6 @@ async def main():
 
     client = MultiServerMCPClient({
         "CalcMCP": {
-            "url": "http://127.0.0.1:8931/sse",
-            "transport": "sse",
         }
     })
 
@@ -47,9 +59,6 @@ async def main():
 
     # =========================================================================
     # 2) Create an LLM that knows how to "call tools"
-    # =========================================================================
-    # ChatOllama is your local LLM runner.
-    # .bind_tools(tools) tells the model which tool "schemas" it is allowed to call.
 
 
     # This is the "system message" that sets the rules of behavior.
@@ -65,31 +74,21 @@ async def main():
     # - LLM tool-call messages
     # - Tool result messages
 
-    messages = [
-        SystemMessage(content=system_prompt),
-        HumanMessage(content=user_prompt),
-    ]
 
     # =========================================================================
     # 3) Tool-execution loop (the "agent" behavior)
     # =========================================================================
 
     for _ in range(8):
-        # A) Ask the model to respond given the current conversation state.
-        ai = await llm.ainvoke(messages)
 
         # Store the model message in the conversation.
         messages.append(ai)
 
-         # B) IMPORTANT:
+        # B) IMPORTANT:
         # The model might emit MULTIPLE tool calls in a single turn.
         # We execute them one-by-one, in order, and only move to the next after
         # we have a result for the previous one.
         #
-
-        for call in ai.tool_calls:
-            tool_name = call["name"]
-            tool_args = call.get("args", {}) or {}
 
             # Each tool call has an ID; ToolMessage must reference it.
             tool_call_id = call.get("id") or call.get("tool_call_id")
@@ -98,9 +97,6 @@ async def main():
             text = tool_text(raw_result)
             numeric_value = last_number(text)
 
-            # C) Feed the tool result back to the model.
-            # We intentionally pass ONLY the numeric value (e.g., "96" not the sentence)
-            # so the next tool call can reuse it directly and reliably.
 
     # =========================================================================
     # 4) Print the full trace 
