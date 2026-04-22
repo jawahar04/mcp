@@ -1,7 +1,7 @@
 # Understanding MCP (Model Context Protocol) - A hands-on guide
 ## Understanding how AI agents can connect to the world
 ## Session labs 
-## Revision 5.3 - 04/21/26
+## Revision 5.4 - 04/21/26
 
 **Versions of dialogs, buttons, etc. shown in screenshots may differ from current version used in dev environments**
 
@@ -65,7 +65,7 @@ python classic_calc.py
 npx -y github:skillrepos/calculator-mcp --port 8931
 ```
 
-![Running remote MCP server](./images/mcp5.png?raw=true "Running remote MCP server")
+![Running remote MCP server](./images/mcp152.png?raw=true "Running remote MCP server")
 <br><br>
 
 6. Now, let's open an additional terminal so we can run our custom code. You can use the "+" control in the upper right of the terminal to add a new terminal or just split the terminal. As shown here, we're splitting the terminal by clicking on the "down arrow" to the immediate right of the plus and selecting *Split terminal*.
@@ -128,7 +128,10 @@ code -d ../extra/agent_mcp.txt agent_mcp.py
 python agent_mcp.py
 ```
 
-![Running agent](./images/mcp81.png?raw=true "Running agent")
+![Running agent](./images/mcp153.png?raw=true "Running agent")
+
+![agent answer](./images/mcp154.png?raw=true "agent answer")
+
 </br></br>
 
 12. You can stop the MCP server in the original terminal via CTRL-C.
