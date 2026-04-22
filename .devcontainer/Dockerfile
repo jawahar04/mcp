@@ -34,6 +34,14 @@ RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
     apt-get install -y nodejs && \
     rm -rf /var/lib/apt/lists/*
 
+# Pre-warm the npx cache for the calculator-mcp training fork used in labs.
+# Without this, the first `npx -y github:skillrepos/calculator-mcp` in a fresh
+# codespace clones the repo, installs dev deps, and runs unbuild (~30–90s).
+# Runs as the `vscode` user so the cache lands in /home/vscode/.npm/_npx where
+# the Codespace session will hit it. `--help` forces the install+build path
+# but exits before starting a server.
+RUN su vscode -c "npx -y github:skillrepos/calculator-mcp --help" >/dev/null
+
 # Pre-install Ollama (binary only — no model pull)
 RUN curl -fsSL https://ollama.com/install.sh | sh
 
