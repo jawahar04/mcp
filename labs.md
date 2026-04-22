@@ -421,7 +421,7 @@ python scripts/mcp_explorer.py http://localhost:8000/mcp 5000
 
 <br><br>
 
-8. Click on *Prompts* and get the `summarize_notes` prompt. You'll see it has assembled both of your saved notes into a single prompt ready for an LLM. This is the pattern: tools write data, resources expose it, prompts package it for LLMs.
+8. Click on *Prompts* and use the button to get the `summarize_notes` prompt. You'll see it has assembled both of your saved notes into a single prompt ready for an LLM. This is the pattern: tools write data, resources expose it, prompts package it for LLMs.
 
 ![prompts](./images/mcp134.png?raw=true "prompts")
 
@@ -462,7 +462,7 @@ python gateway.py
 
 <br><br>
 
-12. Restart the Explorer and connect to the gateway server on `http://localhost:8000/mcp`. Click on *Tools* and you'll see all tools from both servers, namespaced: `notes_save_note`, `notes_list_notes`, `math_add`, `math_multiply`. Try calling `math_multiply` with `a`: 6 and `b`: 7 to confirm both servers are live. 
+12. Restart the Explorer (use the same command as in step 5). This should connect to the gateway server on `http://localhost:8000/mcp`. Click on *Tools* and you'll see all tools from both servers, namespaced: `notes_save_note`, `notes_list_notes`, `math_add`, `math_multiply`. Try calling `math_multiply` with `a`: 6 and `b`: 7 to confirm both servers are live. 
 
 ![all tools](./images/mcp138.png?raw=true "all tools")
 
