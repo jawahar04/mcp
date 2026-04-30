@@ -48,7 +48,7 @@ echo ""
 
 # Step 2: Start Ollama service
 echo "Step 2: Starting Ollama service..."
-ollama serve > /dev/null 2>&1 &
+OLLAMA_KEEP_ALIVE=-1 ollama serve > /dev/null 2>&1 &
 OLLAMA_PID=$!
 echo "✓ Ollama started (PID: $OLLAMA_PID)"
 echo ""
