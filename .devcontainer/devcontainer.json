@@ -1,5 +1,8 @@
 {
     "image": "ghcr.io/skillrepos/mcp-devcontainer:latest",
+    "runArgs": [
+        "--platform", "linux/amd64"
+    ],
     "hostRequirements": {
         "cpus": 4,
         "memory": "16gb",

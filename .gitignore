@@ -5,7 +5,7 @@ __pycache__/
 
 # Python environment
 py_env/
-
+py_env
 
 # C extensions
 *.so
