@@ -46,24 +46,47 @@ def format_args(args: dict) -> str:
 
 
 async def main():
+    # =========================================================================
+    # 1) Connect to the MCP server and discover its tools
+    # =========================================================================
+    # MultiServerMCPClient lets you define one or more MCP servers by name.
+    # Here we register a single server called "CalcMCP" which exposes add/mul/div/etc.
 
     client = MultiServerMCPClient({
         "CalcMCP": {
+            "url": "http://127.0.0.1:8931/mcp/",
+            "transport": "streamable_http",
         }
     })
 
     # Ask the MCP server what tools it exposes.
     # This returns LangChain tool objects that can be invoked with .ainvoke(...)
 
+    tools = await client.get_tools()
 
+    # Create a simple lookup table so we can call tools by name.
+    tool_by_name = {t.name: t for t in tools}
+
+    print("Discovered tools:", list(tool_by_name.keys()))
 
     # =========================================================================
     # 2) Create an LLM that knows how to "call tools"
+    # =========================================================================
+    # ChatOllama is your local LLM runner.
+    # .bind_tools(tools) tells the model which tool "schemas" it is allowed to call.
 
+    llm = ChatOllama(model="llama3.2").bind_tools(tools)
 
     # This is the "system message" that sets the rules of behavior.
     # We emphasize: use tools for math, no nesting, and sequential steps.
 
+    system_prompt = (
+        "You are a math assistant.\n"
+        "You must use tools for all calculations.\n"
+        "Never nest tool calls.\n"
+        "If multiple steps are needed, call tools in sequence.\n"
+        "When you use a tool result, use the numeric value from the tool result.\n"
+    )
 
     # User question. This requires at least two steps: mul(12,8) then div(96,3).
     user_prompt = "What’s 12×8 / 3 ?"
@@ -74,15 +97,33 @@ async def main():
     # - LLM tool-call messages
     # - Tool result messages
 
+    messages = [
+        SystemMessage(content=system_prompt),
+        HumanMessage(content=user_prompt),
+    ]
 
     # =========================================================================
     # 3) Tool-execution loop (the "agent" behavior)
     # =========================================================================
+    # We repeatedly:
+    #   A) Ask the model what to do next
+    #   B) If it requests tool calls, we run them
+    #   C) We feed tool results back as ToolMessage(...)
+    #
+    # We keep looping until the model stops calling tools and produces a final answer.
+    #
+    # The max-iteration cap prevents infinite loops if the model gets confused.
 
     for _ in range(8):
+        # A) Ask the model to respond given the current conversation state.
+        ai = await llm.ainvoke(messages)
 
         # Store the model message in the conversation.
         messages.append(ai)
+
+        # If the model did not request any tool calls, it is "done" and we can exit.
+        if not isinstance(ai, AIMessage) or not ai.tool_calls:
+            break
 
         # B) IMPORTANT:
         # The model might emit MULTIPLE tool calls in a single turn.
@@ -90,13 +131,26 @@ async def main():
         # we have a result for the previous one.
         #
 
+        for call in ai.tool_calls:
+            tool_name = call["name"]
+            tool_args = call.get("args", {}) or {}
+
             # Each tool call has an ID; ToolMessage must reference it.
             tool_call_id = call.get("id") or call.get("tool_call_id")
+
+            # Actually run the MCP tool asynchronously.
+            raw_result = await tool_by_name[tool_name].ainvoke(tool_args)
 
             # Normalize to text, then extract a clean number token.
             text = tool_text(raw_result)
             numeric_value = last_number(text)
 
+            # C) Feed the tool result back to the model.
+            # We intentionally pass ONLY the numeric value (e.g., "96" not the sentence)
+            # so the next tool call can reuse it directly and reliably.
+            messages.append(
+                ToolMessage(content=str(numeric_value), tool_call_id=tool_call_id)
+            )
 
     # =========================================================================
     # 4) Print the full trace 
@@ -107,6 +161,15 @@ async def main():
             print("USER:", msg.content)
 
         elif isinstance(msg, AIMessage):
+            # The AIMessage content is often empty when it is doing tool-calling.
+            print("ASSISTANT (LLM):", msg.content)
+
+            # Show tool calls that the LLM asked for.
+            if msg.tool_calls:
+                for c in msg.tool_calls:
+                    name = c.get("name")
+                    args = c.get("args", {}) or {}
+                    print(f"→ TOOL CALL: {name}({format_args(args)})")
 
         elif isinstance(msg, ToolMessage):
             # Show what we fed back to the model.
