@@ -3,6 +3,14 @@ from fastmcp import FastMCP
 
 math = FastMCP("MathService")
 
-# TODO: add tool – add two numbers
 
-# TODO: multiply tool – multiply two numbers
+@math.tool()
+def add(a: float, b: float) -> float:
+    """Add two numbers."""
+    return a + b
+
+
+@math.tool()
+def multiply(a: float, b: float) -> float:
+    """Multiply two numbers."""
+    return a * b

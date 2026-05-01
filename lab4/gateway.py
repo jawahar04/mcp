@@ -3,9 +3,19 @@
 
 from fastmcp import FastMCP
 
-# TODO: Import the two servers we built (note_server and math_server)
+# Import the two servers we built
+from note_server import server as note_service
+from math_server import math   as math_service
 
-# TODO: Create the gateway and mount both servers with namespaces
+# Create the gateway and mount both servers with namespaces
+gateway = FastMCP("Gateway")
+gateway.mount(note_service, namespace="notes")
+gateway.mount(math_service, namespace="math")
+
+# Now all tools are available at one endpoint:
+#   notes_save_note, notes_list_notes
+#   math_add, math_multiply
+# And all resources/prompts from note_service are also available.
 
 if __name__ == "__main__":
     gateway.run(transport="streamable-http")
